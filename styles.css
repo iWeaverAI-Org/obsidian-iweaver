@@ -6,3 +6,11 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.workspace-leaf-content[data-type="iweaver-view"] {
+    padding: 0;
+}
+
+.workspace-leaf-content[data-type="iweaver-view"] .view-content {
+    padding: 0;
+}

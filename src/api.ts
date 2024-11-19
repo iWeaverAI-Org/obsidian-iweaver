@@ -1,3 +1,5 @@
+import { API_URLS } from "./settings";
+
 interface GetArticlesResponse {
   code: number;
   data: {
@@ -53,16 +55,24 @@ export interface Article {
   cost_seconds: string;
 }
 
-export const getArticles = async (apiKey: string, limit = 15, page = 1): Promise<GetArticlesResponse> => {
-  const response = await fetch(`https://kmai.xiaoduoai.com/api/v1/files`, {
-    method: "POST",
-    body: JSON.stringify({
-      "limit": limit,
-      "page": page
-    }),
-    headers: {
-      "Token": apiKey
-    }
-  })
-  return response.json()
+
+
+export const getArticles = async (
+    apiKey: string, 
+    limit = 15, 
+    page = 1, 
+    url = API_URLS.DOMESTIC
+): Promise<GetArticlesResponse> => {
+    
+    const response = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+            "limit": limit,
+            "page": page
+        }),
+        headers: {
+            "Token": apiKey
+        }
+    })
+    return response.json()
 }

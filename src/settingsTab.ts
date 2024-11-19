@@ -1,5 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian"
 import IweaverPlugin from "./main"
+import { API_URLS } from "./settings"
 
 export class IweaverSettingTab extends PluginSettingTab {
   plugin: IweaverPlugin
@@ -34,17 +35,8 @@ export class IweaverSettingTab extends PluginSettingTab {
       )
     containerEl.createEl('h3', { text: 'Sync Settings' })
     new Setting(containerEl)
-      .setName('Sync at')
-      .setDesc('The time to sync articles')
-      .addText((text) =>
-        text.setPlaceholder('04:00').setValue(this.plugin.settings.syncAt).onChange(async (value) => {
-          this.plugin.settings.syncAt = value
-          await this.plugin.saveSettings()
-        }),
-      )
-    new Setting(containerEl)
       .setName('Sync frequency')
-      .setDesc('The frequency to sync articles')
+      .setDesc('The frequency to sync articles (minutes)')
       .addText((text) =>
         text.setPlaceholder('1').setValue(this.plugin.settings.frequency.toString()).onChange(async (value) => {
           this.plugin.settings.frequency = parseInt(value)
@@ -59,6 +51,20 @@ export class IweaverSettingTab extends PluginSettingTab {
           this.plugin.settings.syncOnStart = value
           await this.plugin.saveSettings()
         }),
+      )
+    new Setting(containerEl)
+      .setName('Platform')
+      .setDesc('Select the platform to use')
+      .addDropdown((dropdown) =>
+        dropdown
+          .addOption('zhiwo', '知我')
+          .addOption('iweaver', 'IWeaver')
+          .setValue(this.plugin.settings.platform)
+          .onChange(async (value) => {
+            this.plugin.settings.platform = value === 'iweaver' ? 'iweaver' : 'zhiwo'
+            this.plugin.settings.fetchUrl = value === 'iweaver' ? API_URLS.OVERSEAS : API_URLS.DOMESTIC
+            await this.plugin.saveSettings()
+          }),
       )
   }
 }
