@@ -1,0 +1,11 @@
+{
+	"id": "iweaver",
+	"name": "iWeaver",
+	"version": "1.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "iWeaver",
+	"author": "iWeaver",
+	"authorUrl": "https://iweaver.com",
+	"fundingUrl": "https://iweaver.com/pricing",
+	"isDesktopOnly": false
+}
