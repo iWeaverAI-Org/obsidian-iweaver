@@ -1,10 +1,13 @@
 import { ItemView, WorkspaceLeaf } from "obsidian";
+import { IweaverSettings } from "./settings";
 
 export const VIEW_TYPE_IWEAVER = "iweaver-view";
 
 export class IweaverView extends ItemView {
-    constructor(leaf: WorkspaceLeaf) {
+    settings: IweaverSettings;
+    constructor(leaf: WorkspaceLeaf,settings: IweaverSettings) {
         super(leaf);
+        this.settings = settings;
     }
 
     getViewType() {
@@ -18,11 +21,17 @@ export class IweaverView extends ItemView {
     async onOpen() {
         const container = this.containerEl.children[1];
         container.empty();
-        
         const iframe = container.createEl("iframe");
-        iframe.src = "https://iweaver.com"; // 替换成你需要嵌入的网页地址
+        // 从settings获取apiKey
+        const apiKey = this.settings.apiKey || "";
+        if(this.settings.platform === 'iweaver'){
+            iframe.src = `http://10.0.3.41:3080/dialogue?token=${apiKey}&i18n=en`;
+        }else{
+            iframe.src = `http://10.0.3.41:3080/dialogue?token=${apiKey}`;
+        }
         iframe.style.width = "100%";
-        iframe.style.height = "100%";
+        iframe.style.filter = "grayscale(80%)"
+        iframe.style.height = "99%";
         iframe.style.border = "none";
     }
 } 

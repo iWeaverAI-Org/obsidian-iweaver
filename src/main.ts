@@ -33,7 +33,7 @@ export default class IweaverPlugin extends Plugin {
     // 注册视图
     this.registerView(
       VIEW_TYPE_IWEAVER,
-      (leaf) => new IweaverView(leaf)
+      (leaf) => new IweaverView(leaf,this.settings)
     );
 
     // 添加图标按钮到左侧栏

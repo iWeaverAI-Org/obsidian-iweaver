@@ -63,8 +63,8 @@ export const getArticles = async (
     page = 1, 
     url = API_URLS.DOMESTIC
 ): Promise<GetArticlesResponse> => {
-    
-    const response = await fetch(url, {
+    const urlWithSource = `${url}?source=iframe_sdk`
+    const response = await fetch(urlWithSource, {
         method: "POST",
         body: JSON.stringify({
             "limit": limit,
