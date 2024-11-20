@@ -25,9 +25,9 @@ export class IweaverView extends ItemView {
         // 从settings获取apiKey
         const apiKey = this.settings.apiKey || "";
         if(this.settings.platform === 'iweaver'){
-            iframe.src = `http://10.0.3.41:3080/dialogue?token=${apiKey}&i18n=en`;
+            iframe.src = `https://kmai-sdk-test.xiaoduoai.com/dialogue??token=${apiKey}&i18n=en`;
         }else{
-            iframe.src = `http://10.0.3.41:3080/dialogue?token=${apiKey}`;
+            iframe.src = `https://kmai-sdk-test.xiaoduoai.com/dialogue??token=${apiKey}`;
         }
         iframe.style.width = "100%";
         iframe.style.filter = "grayscale(80%)"
