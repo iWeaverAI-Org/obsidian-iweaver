@@ -19,18 +19,22 @@ export class IweaverView extends ItemView {
     }
 
     async onOpen() {
-        const container = this.containerEl.children[1];
+        const container = this.containerEl.children[1]
         container.empty();
         const iframe = container.createEl("iframe");
         // 从settings获取apiKey
         const apiKey = this.settings.apiKey || "";
         if(this.settings.platform === 'iweaver'){
-            iframe.src = `https://kmai-sdk-test.xiaoduoai.com/dialogue??token=${apiKey}&i18n=en`;
+            iframe.src = `https://kmai-sdk-test.xiaoduoai.com/dialogue?token=${apiKey}&i18n=en`;
         }else{
-            iframe.src = `https://kmai-sdk-test.xiaoduoai.com/dialogue??token=${apiKey}`;
+            iframe.src = `https://kmai-sdk-test.xiaoduoai.com/dialogue?token=${apiKey}`;
+        }
+        if(document.body.classList.contains('theme-dark')){
+            iframe.style.filter = "grayscale(100%) invert(100%)"
+        }else{
+            iframe.style.filter = "grayscale(80%)"
         }
         iframe.style.width = "100%";
-        iframe.style.filter = "grayscale(80%)"
         iframe.style.height = "99%";
         iframe.style.border = "none";
     }

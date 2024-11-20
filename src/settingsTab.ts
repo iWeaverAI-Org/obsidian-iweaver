@@ -11,53 +11,15 @@ export class IweaverSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this
     containerEl.empty()
+    
+    containerEl.createEl('h3', { text: 'Sync settings' })
+
     new Setting(containerEl)
-      .setName('API Key')
-      .setDesc(
-        createFragment((fragment) => {
-          fragment.append(
-            'You can create an API key at ',
-            fragment.createEl('a', {
-              text: 'https://iweaver.app/settings/api',
-              href: 'https://iweaver.app/settings/api',
-            }),
-          )
-        }),
-      )
-      .addText((text) =>
-        text
-          .setPlaceholder('Enter your Iweaver Api Key')
-          .setValue(this.plugin.settings.apiKey)
-          .onChange(async (value) => {
-            this.plugin.settings.apiKey = value
-            await this.plugin.saveSettings()
-          }),
-      )
-    containerEl.createEl('h3', { text: 'Sync Settings' })
-    new Setting(containerEl)
-      .setName('Sync frequency')
-      .setDesc('The frequency to sync articles (minutes)')
-      .addText((text) =>
-        text.setPlaceholder('1').setValue(this.plugin.settings.frequency.toString()).onChange(async (value) => {
-          this.plugin.settings.frequency = parseInt(value)
-          await this.plugin.saveSettings()
-        }),
-      )
-    new Setting(containerEl)
-      .setName('Sync on start')
-      .setDesc('Whether to sync articles on start')
-      .addToggle((toggle) =>
-        toggle.setValue(this.plugin.settings.syncOnStart).onChange(async (value) => {
-          this.plugin.settings.syncOnStart = value
-          await this.plugin.saveSettings()
-        }),
-      )
-    new Setting(containerEl)
-      .setName('Platform')
-      .setDesc('Select the platform to use')
+      .setName('Source platform')
+      .setDesc('Choose the source platform of the data, which is where you get the Token.')
       .addDropdown((dropdown) =>
         dropdown
-          .addOption('zhiwo', '知我')
+          .addOption('zhiwo', 'Zhiwo')
           .addOption('iweaver', 'IWeaver')
           .setValue(this.plugin.settings.platform)
           .onChange(async (value) => {
@@ -65,6 +27,53 @@ export class IweaverSettingTab extends PluginSettingTab {
             this.plugin.settings.fetchUrl = value === 'iweaver' ? API_URLS.OVERSEAS : API_URLS.DOMESTIC
             await this.plugin.saveSettings()
           }),
+      )
+
+    new Setting(containerEl)
+      .setName('API Token')
+      .setDesc('Create an API key at settings page on iWeaver web app. It\'s a secret!')
+      .addText((text) =>
+        text
+          .setPlaceholder('Enter your API token')
+          .setValue(this.plugin.settings.apiKey)
+          .onChange(async (value) => {
+            this.plugin.settings.apiKey = value
+            await this.plugin.saveSettings()
+          }),
+      )
+
+    new Setting(containerEl)
+      .setName('Folder')
+      .setDesc('Choose the form of folder where the data will be stored')
+      .addDropdown((dropdown) =>
+        dropdown
+          .addOption('iWeaver/{{tag}}', 'iWeaver/{{tag}}')
+          .addOption('iWeaver/{{date}}', 'iWeaver/{{date}}')
+          .setValue(this.plugin.settings.folder)
+          .onChange(async (value) => {
+            this.plugin.settings.folder = value
+            await this.plugin.saveSettings()
+          }),
+      )
+
+    new Setting(containerEl)
+      .setName('Frequency')
+      .setDesc('Enter the frequency in minutes to sync automatically.')
+      .addText((text) =>
+        text.setPlaceholder('10').setValue(this.plugin.settings.frequency.toString()).onChange(async (value) => {
+          this.plugin.settings.frequency = parseInt(value)
+          await this.plugin.saveSettings()
+        }),
+      )
+
+    new Setting(containerEl)
+      .setName('Sync on startup')
+      .setDesc('Check this box if you want to sync with Iweaver when the app is loaded')
+      .addToggle((toggle) =>
+        toggle.setValue(this.plugin.settings.syncOnStart).onChange(async (value) => {
+          this.plugin.settings.syncOnStart = value
+          await this.plugin.saveSettings()
+        }),
       )
   }
 }

@@ -44,7 +44,7 @@ export interface Article {
     language: string;
   };
   have_comment: boolean;
-  tags: string[];
+  tags: { name: string ,id: number}[];
   is_fragmented: boolean;
   image_content: string;
   is_audio: boolean;

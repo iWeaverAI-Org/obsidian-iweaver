@@ -1,94 +1,46 @@
-# Obsidian Sample Plugin
+# Iweaver Plugin for Obsidian
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+这是一个用于 Obsidian 的 Iweaver 插件。该插件允许用户从 Iweaver 平台同步数据到 Obsidian 笔记中。
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## 功能
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+- 添加一个左侧栏图标，点击后打开 Iweaver 视图。
+- 提供一个命令 "Sync new changes" 来手动同步数据。
+- 自动同步功能，用户可以设置同步频率。
+- 支持根据日期或标签创建文件夹来存储同步的数据。
+- 提供设置页面，用户可以配置 API Token、同步频率、文件夹路径等。
 
-## First time developing plugins?
+## 安装
 
-Quick starting guide for new plugin devs:
+1. 克隆此仓库到本地。
+2. 确保您的 NodeJS 版本至少为 v16。
+3. 运行 `npm i` 或 `yarn` 来安装依赖。
+4. 运行 `npm run dev` 来启动编译。
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## 使用
 
-## Releasing new releases
+- 在 Obsidian 中启用插件。
+- 在设置页面中输入您的 API Token 和其他配置。
+- 使用左侧栏图标或命令来同步数据。
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+## 设置
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+- **Source platform**: 选择数据来源平台。
+- **API Token**: 在 Iweaver 网页应用的设置页面创建 API 密钥。
+- **Folder**: 选择数据存储的文件夹形式。
+- **Frequency**: 输入自动同步的频率（以分钟为单位）。
+- **Sync on startup**: 勾选此选项以在应用加载时自动同步。
 
-## Adding your plugin to the community plugin list
+## 手动安装插件
 
-- Check the [plugin guidelines](https://docs.obsidian.md/Plugins/Releasing/Plugin+guidelines).
-- Publish an initial version.
-- Make sure you have a `README.md` file in the root of your repo.
-- Make a pull request at https://github.com/obsidianmd/obsidian-releases to add your plugin.
+- 将 `main.js`、`styles.css`、`manifest.json` 复制到您的 vault `VaultFolder/.obsidian/plugins/your-plugin-id/`。
 
-## How to use
+## 代码质量提升（可选）
 
-- Clone this repo.
-- Make sure your NodeJS is at least v16 (`node --version`).
-- `npm i` or `yarn` to install dependencies.
-- `npm run dev` to start compilation in watch mode.
+- 使用 [ESLint](https://eslint.org/) 分析代码以快速发现问题。
+- 安装 ESLint：`npm install -g eslint`
+- 分析项目代码：`eslint main.ts`
 
-## Manually installing the plugin
+## API 文档
 
-- Copy over `main.js`, `styles.css`, `manifest.json` to your vault `VaultFolder/.obsidian/plugins/your-plugin-id/`.
-
-## Improve code quality with eslint (optional)
-- [ESLint](https://eslint.org/) is a tool that analyzes your code to quickly find problems. You can run ESLint against your plugin to find common bugs and ways to improve your code. 
-- To use eslint with this project, make sure to install eslint from terminal:
-  - `npm install -g eslint`
-- To use eslint to analyze this project use this command:
-  - `eslint main.ts`
-  - eslint will then create a report with suggestions for code improvement by file and line number.
-- If your source code is in a folder, such as `src`, you can use eslint with this command to analyze all files in that folder:
-  - `eslint .\src\`
-
-## Funding URL
-
-You can include funding URLs where people who use your plugin can financially support it.
-
-The simple way is to set the `fundingUrl` field to your link in your `manifest.json` file:
-
-```json
-{
-    "fundingUrl": "https://buymeacoffee.com"
-}
-```
-
-If you have multiple URLs, you can also do:
-
-```json
-{
-    "fundingUrl": {
-        "Buy Me a Coffee": "https://buymeacoffee.com",
-        "GitHub Sponsor": "https://github.com/sponsors",
-        "Patreon": "https://www.patreon.com/"
-    }
-}
-```
-
-## API Documentation
-
-See https://github.com/obsidianmd/obsidian-api
+请参阅 [Obsidian API 文档](https://github.com/obsidianmd/obsidian-api) 以获取更多信息。

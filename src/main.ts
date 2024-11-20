@@ -1,4 +1,4 @@
-import { Notice, Plugin } from "obsidian";
+import { Notice, Plugin, moment } from "obsidian";
 import { IweaverSettings, DEFAULT_SETTINGS } from "./settings";
 import { getArticles } from "./api";
 import { IweaverSettingTab } from "./settingsTab";
@@ -97,7 +97,7 @@ export default class IweaverPlugin extends Plugin {
   }
 
   async fetchIweaver() {
-    const { apiKey, syncing } = this.settings
+    const { apiKey, syncing, folder } = this.settings;
     if (syncing) {
       new Notice('Already syncing ...')
       return
@@ -149,23 +149,32 @@ export default class IweaverPlugin extends Plugin {
         items.push(...data.items)
       }
 
-      // 确保 iweaver 文件夹存在
-      const folderPath = 'iweaver'
-      if (!this.app.vault.getAbstractFileByPath(folderPath)) {
-        await this.app.vault.createFolder(folderPath)
-      }
-
       let skippedCount = 0;
       let createdCount = 0;
       let failedCount = 0;
       new Notice(`Found ${items.length} items`);
       
       for (const item of items) {
-        const { alias, innerHTML, id, type, file_url } = item
-        const sanitizedTitle = alias.replace(/[\\/:*?"<>|]/g, '')
-        
-        // 根据类型确定文件名
-        const fileName = type === 'pdf' 
+        const { alias, innerHTML, id,tags, type, file_url, create_time } = item;
+        const sanitizedTitle = alias.replace(/[\\/:*?"<>|]/g, '');
+
+        // 根据设置选择文件夹路径
+        let folderPath = 'iweaver';
+        if (folder.includes('{{date}}')) {
+          const date = moment(create_time).format('YYYY-MM-DD');
+          folderPath = folder.replace('{{date}}', date);
+        } else if (folder.includes('{{tag}}')) {
+          // 处理 tag 的逻辑
+          const tagName = tags[0]?.name
+          folderPath = folder.replace('{{tag}}', tagName || "")
+        }
+
+        // 确保文件夹存在
+        if (!this.app.vault.getAbstractFileByPath(folderPath)) {
+          await this.app.vault.createFolder(folderPath);
+        }
+
+        const fileName = type === 'pdf'
           ? `${folderPath}/${sanitizedTitle}-${id}.pdf`
           : `${folderPath}/${sanitizedTitle}-${id}.html`;
         
