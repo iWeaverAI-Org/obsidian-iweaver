@@ -1,6 +1,5 @@
-import { ItemView, WorkspaceLeaf, Notice, Menu } from "obsidian";
+import { ItemView, WorkspaceLeaf} from "obsidian";
 import { IweaverSettings } from "./settings";
-import { isLocal } from "./env";
 
 export const VIEW_TYPE_IWEAVER = "iweaver-view";
 export const VIEW_TYPE_IWEAVER_PREVIEW = "iweaver-preview-view";
