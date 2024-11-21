@@ -31,15 +31,10 @@ export class IweaverView extends ItemView {
 		if (isLocal()) {
 			hostName = "http://10.0.3.41:3080";
 		}
-		if (ifEn) {
-			iframe.src = `${hostName}/dialogue?token=${apiKey}&i18n=en${
-				isDarkTheme ? "" : "&background_img=0"
-			}`;
-		} else {
-			iframe.src = `${hostName}/dialogue?token=${apiKey}${
-				isDarkTheme ? "" : "&background_img=0"
-			}`;
-		}
+		iframe.src = `${hostName}/dialogue?token=${apiKey}${
+			ifEn ? "&i18n=en" : ""
+		}${isDarkTheme ? "" : "&background_img=0"}`;
+
 		if (isDarkTheme) {
 			iframe.style.filter = "grayscale(100%) invert(100%)";
 		}
