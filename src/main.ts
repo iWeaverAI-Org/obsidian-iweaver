@@ -344,7 +344,7 @@ export default class IweaverPlugin extends Plugin {
 		const downloadLink = fileUrl;
 		const fileContent = `---
 SourceURL: ${downloadLink}
-_id: ${fileId || 'unknown'}
+_id: ${fileId || "unknown"}
 ---
 ${summary?.template || content}`;
 		await this.app.vault.create(fileName, fileContent);
