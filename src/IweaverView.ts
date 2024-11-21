@@ -1,22 +1,23 @@
-import { ItemView, WorkspaceLeaf } from "obsidian";
+import { ItemView, WorkspaceLeaf, Notice, Menu } from "obsidian";
 import { IweaverSettings } from "./settings";
+import { isLocal } from "./env";
 
 export const VIEW_TYPE_IWEAVER = "iweaver-view";
 export const VIEW_TYPE_IWEAVER_PREVIEW = "iweaver-preview-view";
 export class IweaverView extends ItemView {
-    settings: IweaverSettings;
-    constructor(leaf: WorkspaceLeaf,settings: IweaverSettings) {
-        super(leaf);
-        this.settings = settings;
-    }
+	settings: IweaverSettings;
+	constructor(leaf: WorkspaceLeaf, settings: IweaverSettings) {
+		super(leaf);
+		this.settings = settings;
+	}
 
-    getViewType() {
-        return VIEW_TYPE_IWEAVER;
-    }
+	getViewType() {
+		return VIEW_TYPE_IWEAVER;
+	}
 
-    getDisplayText() {
-        return "Iweaver View";
-    }
+	getDisplayText() {
+		return "Iweaver View";
+	}
 
     async onOpen() {
         const container = this.containerEl.children[1]
