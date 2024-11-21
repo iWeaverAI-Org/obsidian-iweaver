@@ -245,6 +245,7 @@ export default class IweaverPlugin extends Plugin {
 						file_url,
 						create_time,
 						summary,
+						id,
 					} = item;
 					const sanitizedTitle = alias.replace(/[\\/:*?"<>|]/g, "");
 
@@ -282,7 +283,8 @@ export default class IweaverPlugin extends Plugin {
 								mdFileName,
 								file_url,
 								summary,
-								content
+								content,
+								id
 							);
 						}
 					} else {
@@ -291,7 +293,8 @@ export default class IweaverPlugin extends Plugin {
 								mdFileName,
 								file_url,
 								summary,
-								content
+								content,
+								id
 							);
 						}
 					}
@@ -335,12 +338,15 @@ export default class IweaverPlugin extends Plugin {
 		fileName: string,
 		fileUrl: string,
 		summary: any,
-		content: string
+		content: string,
+		fileId: string
 	) {
 		const downloadLink = fileUrl;
-		const fileContent = `---\nSourceURL: ${downloadLink}\n---\n\n${
-			summary?.template || content
-		}`;
+		const fileContent = `---
+SourceURL: ${downloadLink}
+_id: ${fileId || 'unknown'}
+---
+${summary?.template || content}`;
 		await this.app.vault.create(fileName, fileContent);
 	}
 }
