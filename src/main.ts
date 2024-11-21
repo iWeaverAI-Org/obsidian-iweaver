@@ -2,7 +2,7 @@ import { Notice, Plugin, moment } from "obsidian";
 import { IweaverSettings, DEFAULT_SETTINGS } from "./settings";
 import { getArticles } from "./api";
 import { IweaverSettingTab } from "./settingsTab";
-import { VIEW_TYPE_IWEAVER, IweaverView } from "./IweaverView";
+import { VIEW_TYPE_IWEAVER, IweaverView, IweaverPreviewView, VIEW_TYPE_IWEAVER_PREVIEW } from "./IweaverView";
 
 export default class IweaverPlugin extends Plugin {
   settings: IweaverSettings;
@@ -27,6 +27,47 @@ export default class IweaverPlugin extends Plugin {
         await this.fetchIweaver();
       },
     });
+    // 注册视图
+    this.registerView(
+      VIEW_TYPE_IWEAVER_PREVIEW,
+      (leaf) => new IweaverPreviewView(leaf)
+    );
+    this.registerEvent(
+      this.app.workspace.on('file-open', (file) => {
+        if (file) {
+          this.app.fileManager.processFrontMatter(file,async(frontmatter)=>{
+            if(frontmatter && frontmatter?.SourceURL){
+              const { workspace } = this.app;
+              const existingView = workspace.getLeavesOfType(VIEW_TYPE_IWEAVER_PREVIEW)[0]; 
+              
+              if (existingView) {
+                // @ts-ignore
+                const container = existingView.containerEl as HTMLDivElement
+                const iframe = container.querySelector('iframe')
+                if(iframe){
+                  iframe.src = frontmatter.SourceURL
+                }
+                return
+              }
+              const rightLeaf = workspace.getRightLeaf(false);
+              if (rightLeaf) {
+                await rightLeaf.setViewState({
+                  type: VIEW_TYPE_IWEAVER_PREVIEW,
+                  active: true,
+                });
+                const existingView = workspace.getLeavesOfType(VIEW_TYPE_IWEAVER_PREVIEW)[0]; 
+                // @ts-ignore
+                const container = existingView.containerEl as HTMLDivElement
+                const iframe = container.querySelector('iframe')
+                if(iframe){
+                  iframe.src = frontmatter.SourceURL
+                }
+              }
+            }
+          })
+        }
+      })
+    );
     
     this.addSettingTab(new IweaverSettingTab(this.app, this));
 
@@ -96,8 +137,20 @@ export default class IweaverPlugin extends Plugin {
     this.app.workspace.detachLeavesOfType(VIEW_TYPE_IWEAVER);
   }
 
+  private getFolderPath(create_time: string, tags: any[]): string {
+    let folderPath = 'iweaver';
+    if (this.settings.folder.includes('{{date}}')) {
+      const date = moment(create_time).format('YYYY-MM-DD');
+      folderPath = this.settings.folder.replace('{{date}}', date);
+    } else if (this.settings.folder.includes('{{tag}}')) {
+      const tagName = tags[0]?.name;
+      folderPath = this.settings.folder.replace('{{tag}}', tagName || "");
+    }
+    return folderPath;
+  }
+
   async fetchIweaver() {
-    const { apiKey, syncing, folder } = this.settings;
+    const { apiKey, syncing } = this.settings;
     if (syncing) {
       new Notice('Already syncing ...')
       return
@@ -155,57 +208,45 @@ export default class IweaverPlugin extends Plugin {
       new Notice(`Found ${items.length} items`);
       
       for (const item of items) {
-        const { alias, innerHTML, id,tags, type, file_url, create_time } = item;
-        const sanitizedTitle = alias.replace(/[\\/:*?"<>|]/g, '');
+        try {
+          const { alias, content, tags, type, file_url, create_time, summary } = item;
+          const sanitizedTitle = alias.replace(/[\\/:*?"<>|]/g, '');
 
-        // 根据设置选择文件夹路径
-        let folderPath = 'iweaver';
-        if (folder.includes('{{date}}')) {
-          const date = moment(create_time).format('YYYY-MM-DD');
-          folderPath = folder.replace('{{date}}', date);
-        } else if (folder.includes('{{tag}}')) {
-          // 处理 tag 的逻辑
-          const tagName = tags[0]?.name
-          folderPath = folder.replace('{{tag}}', tagName || "")
-        }
+          // 使用新函数获取文件夹路径
+          const folderPath = this.getFolderPath(create_time, tags);
 
-        // 确保文件夹存在
-        if (!this.app.vault.getAbstractFileByPath(folderPath)) {
-          await this.app.vault.createFolder(folderPath);
-        }
+          // 确保文件夹存在
+          if (!this.app.vault.getAbstractFileByPath(folderPath)) {
+            await this.app.vault.createFolder(folderPath);
+          }
 
-        const fileName = type === 'pdf'
-          ? `${folderPath}/${sanitizedTitle}-${id}.pdf`
-          : `${folderPath}/${sanitizedTitle}-${id}.html`;
-        
-        const file = this.app.vault.getAbstractFileByPath(fileName)
-        if (file) {
-          skippedCount++;
-          continue;
-        }
+          const pdfFileName = `${folderPath}/${sanitizedTitle}.pdf`;
+          const mdFileName = `${folderPath}/${sanitizedTitle}.md`;
 
-        let fileContent;
-        if (type === 'pdf') {
-          try {
-            const response = await fetch(file_url);
-            if (!response.ok) throw new Error('Failed to download PDF');
-            const buffer = await response.arrayBuffer();
-            fileContent = new Uint8Array(buffer);
-          } catch (err) {
-            failedCount++;
-            console.error(`Failed to download PDF: ${alias}`, err);
+          const pdfFile = this.app.vault.getAbstractFileByPath(pdfFileName);
+          const mdFile = this.app.vault.getAbstractFileByPath(mdFileName);
+
+          if (pdfFile && mdFile) {
+            skippedCount++;
             continue;
           }
-        } else {
-          fileContent = innerHTML;
-        }
 
-        try {
-          await this.app.vault.createBinary(fileName, fileContent as ArrayBuffer);
+          if (type === 'pdf') {
+            if (!pdfFile) {
+             await this.createPdfFile(pdfFileName, file_url, alias);
+            }
+            if (!mdFile) {
+             await this.createMarkdownFile(mdFileName, file_url, summary, content);
+            }
+          } else {
+            if (!mdFile) {
+             await this.createMarkdownFile(mdFileName, file_url, summary, content);
+            }
+          }
           createdCount++;
         } catch (err) {
           failedCount++;
-          console.error(`Failed to create file: ${fileName}`, err);
+          console.error(`Failed to create file`);
         }
       }
       
@@ -215,5 +256,23 @@ export default class IweaverPlugin extends Plugin {
     } finally {
       await this.resetSyncingStateSetting()
     }
+  }
+
+  private async createPdfFile(fileName: string, fileUrl: string, alias: string) {
+    try {
+      const response = await fetch(fileUrl);
+      if (!response.ok) throw new Error('Failed to download Source File');
+      const buffer = await response.arrayBuffer();
+      const fileContent = new Uint8Array(buffer);
+     return  await this.app.vault.createBinary(fileName, fileContent as ArrayBuffer);
+    } catch (err) {
+      console.error(`Failed to download Source File: ${alias}`, err);
+    }
+  }
+
+  private async createMarkdownFile(fileName: string, fileUrl: string, summary: any, content: string) {
+    const downloadLink = fileUrl;
+    const fileContent = `---\nSourceURL: ${downloadLink}\n---\n\n${summary?.template || content}`;
+    await this.app.vault.create(fileName, fileContent);
   }
 }

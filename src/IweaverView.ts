@@ -2,7 +2,7 @@ import { ItemView, WorkspaceLeaf } from "obsidian";
 import { IweaverSettings } from "./settings";
 
 export const VIEW_TYPE_IWEAVER = "iweaver-view";
-
+export const VIEW_TYPE_IWEAVER_PREVIEW = "iweaver-preview-view";
 export class IweaverView extends ItemView {
     settings: IweaverSettings;
     constructor(leaf: WorkspaceLeaf,settings: IweaverSettings) {
@@ -39,3 +39,24 @@ export class IweaverView extends ItemView {
         iframe.style.border = "none";
     }
 } 
+
+export class IweaverPreviewView extends ItemView {
+    constructor(leaf: WorkspaceLeaf) {
+        super(leaf);
+    }
+    getViewType() {
+        return VIEW_TYPE_IWEAVER_PREVIEW;
+    }
+    getDisplayText() {
+        return "Iweaver Preview";
+    }
+    async onOpen() {
+        const container = this.containerEl.children[1]
+        container.empty();
+        const iframe = container.createEl("iframe");
+        iframe.src = this.getState().SourceURL as string;
+        iframe.style.width = "100%";
+        iframe.style.height = "99%";
+        iframe.style.border = "none";
+    }
+}
