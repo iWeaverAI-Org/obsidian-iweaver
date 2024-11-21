@@ -1,10 +1,10 @@
 {
-	"id": "iweaver",
-	"name": "iWeaver",
+	"id": "obsidian-iWeaver",
+	"name": "obsidian-iWeaver",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "iWeaver",
-	"author": "iWeaver",
+	"description": "Synchronize the iWeaver site knowledge base to obsidian",
+	"author": "iweaver@iweaver.ai",
 	"authorUrl": "https://iweaver.com",
 	"fundingUrl": "https://iweaver.com/pricing",
 	"isDesktopOnly": false
