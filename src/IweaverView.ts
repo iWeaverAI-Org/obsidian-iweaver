@@ -1,6 +1,5 @@
 import { ItemView, WorkspaceLeaf } from "obsidian";
 import { IweaverSettings } from "./settings";
-import { isLocal } from "./env";
 
 export const VIEW_TYPE_IWEAVER = "iweaver-view";
 export const VIEW_TYPE_IWEAVER_PREVIEW = "iweaver-preview-view";
@@ -26,10 +25,10 @@ export class IweaverView extends ItemView {
 		const apiKey = this.settings.apiKey || "";
 		const ifEn = this.settings.platform === "iweaver";
 		const isDarkTheme = document.body.classList.contains("theme-dark");
-		let hostName = "https://kmai-sdk-test.xiaoduoai.com";
-		if (isLocal()) {
-			hostName = "http://10.0.3.41:3080";
-		}
+		const hostName =
+			process.env.MODE === "dev"
+				? "https://kmai-sdk-test.xiaoduoai.com"
+				: "https://kmai-sdk.xiaoduoai.com";
 		let src = `${hostName}/dialogue?token=${apiKey}${
 			ifEn ? "&i18n=en" : ""
 		}${isDarkTheme ? "" : "&background_img=0"}`;

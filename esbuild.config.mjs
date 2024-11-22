@@ -14,6 +14,9 @@ const context = await esbuild.context({
 	banner: {
 		js: banner,
 	},
+	define: {
+		"process.env.MODE": JSON.stringify(process.env.MODE),
+	},
 	entryPoints: ["./src/main.ts"],
 	bundle: true,
 	external: [

@@ -8,7 +8,6 @@ import {
 	IweaverPreviewView,
 	VIEW_TYPE_IWEAVER_PREVIEW,
 } from "./IweaverView";
-
 export default class IweaverPlugin extends Plugin {
 	settings: IweaverSettings;
 	private syncIntervalId: NodeJS.Timeout | null = null;
