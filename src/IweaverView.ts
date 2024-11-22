@@ -1,9 +1,9 @@
 import { ItemView, WorkspaceLeaf } from "obsidian";
 import { IweaverSettings } from "./settings";
 
-export const VIEW_TYPE_IWEAVER = "iweaver-view";
-export const VIEW_TYPE_IWEAVER_PREVIEW = "iweaver-preview-view";
-export class IweaverView extends ItemView {
+export const IWEAVER_BOT_VIEW = "iweaver-view";
+export const IWEAVER_PREVIEW_VIEW = "iweaver-preview-view";
+export class IweaverBotView extends ItemView {
 	settings: IweaverSettings;
 	constructor(leaf: WorkspaceLeaf, settings: IweaverSettings) {
 		super(leaf);
@@ -11,7 +11,7 @@ export class IweaverView extends ItemView {
 	}
 
 	getViewType() {
-		return VIEW_TYPE_IWEAVER;
+		return IWEAVER_BOT_VIEW;
 	}
 
 	getDisplayText() {
@@ -59,7 +59,7 @@ export class IweaverPreviewView extends ItemView {
 		super(leaf);
 	}
 	getViewType() {
-		return VIEW_TYPE_IWEAVER_PREVIEW;
+		return IWEAVER_PREVIEW_VIEW;
 	}
 	getDisplayText() {
 		return "Iweaver Preview";

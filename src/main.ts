@@ -3,25 +3,78 @@ import { IweaverSettings, DEFAULT_SETTINGS } from "./settings";
 import { getArticles } from "./api";
 import { IweaverSettingTab } from "./settingsTab";
 import {
-	VIEW_TYPE_IWEAVER,
-	IweaverView,
+	IWEAVER_BOT_VIEW,
+	IweaverBotView,
 	IweaverPreviewView,
-	VIEW_TYPE_IWEAVER_PREVIEW,
+	IWEAVER_PREVIEW_VIEW,
 } from "./IweaverView";
 export default class IweaverPlugin extends Plugin {
 	settings: IweaverSettings;
 	private syncIntervalId: NodeJS.Timeout | null = null;
 
+	private setBotIframeURL() {
+		const activeFile = this.app.workspace.getActiveFile();
+		if (!activeFile) return;
+		const existingView =
+			this.app.workspace.getLeavesOfType(IWEAVER_BOT_VIEW)[0];
+		if (!existingView) return;
+		// @ts-ignore
+		const container = existingView.containerEl as HTMLDivElement;
+		const iframe = container.querySelector("iframe");
+		if (iframe) {
+			this.app.fileManager.processFrontMatter(
+				activeFile,
+				(frontmatter) => {
+					if (frontmatter?._id) {
+						const file_id = frontmatter._id;
+						const fileIdParam = `file_id=${file_id}`;
+						console.log(iframe.src);
+
+						if (iframe.src.includes("file_id=")) {
+							// 替换现有的 file_id
+							iframe.src = iframe.src.replace(
+								/file_id=[^&]*/,
+								fileIdParam
+							);
+						} else {
+							// 添加新的 file_id
+							iframe.src += `&${fileIdParam}`;
+						}
+					}
+				}
+			);
+		}
+	}
+	private async setPreviewIframeSource(sourceURL: string) {
+		let existingView =
+			this.app.workspace.getLeavesOfType(IWEAVER_PREVIEW_VIEW)[0];
+		if (!existingView) {
+			const rightLeaf = this.app.workspace.getRightLeaf(false);
+			if (!rightLeaf) return;
+			await rightLeaf.setViewState({
+				type: IWEAVER_PREVIEW_VIEW,
+				active: true,
+			});
+			existingView =
+				this.app.workspace.getLeavesOfType(IWEAVER_PREVIEW_VIEW)[0];
+		}
+		console.log(this.app.workspace.getLeavesOfType(IWEAVER_PREVIEW_VIEW));
+		// @ts-ignore
+		const container = existingView.containerEl as HTMLDivElement;
+		const iframe = container.querySelector("iframe");
+		if (iframe) {
+			iframe.src = sourceURL;
+		}
+	}
+
 	async onload() {
 		await this.loadSettings();
 		await this.resetSyncingStateSetting();
-
-		if (this.settings.syncOnStart) {
-			setTimeout(() => {
+		this.app.workspace.onLayoutReady(() => {
+			if (this.settings.syncOnStart) {
 				this.fetchIweaver();
-			}, 3000);
-		}
-
+			}
+		});
 		this.setupAutoSync();
 
 		this.addCommand({
@@ -33,51 +86,20 @@ export default class IweaverPlugin extends Plugin {
 		});
 		// 注册视图
 		this.registerView(
-			VIEW_TYPE_IWEAVER_PREVIEW,
+			IWEAVER_PREVIEW_VIEW,
 			(leaf) => new IweaverPreviewView(leaf)
 		);
 		this.registerEvent(
 			this.app.workspace.on("file-open", (file) => {
 				if (file) {
+					this.setBotIframeURL();
 					this.app.fileManager.processFrontMatter(
 						file,
 						async (frontmatter) => {
 							if (frontmatter && frontmatter?.SourceURL) {
-								const { workspace } = this.app;
-								const existingView = workspace.getLeavesOfType(
-									VIEW_TYPE_IWEAVER_PREVIEW
-								)[0];
-
-								if (existingView) {
-									const container =
-										// @ts-ignore
-										existingView.containerEl as HTMLDivElement;
-									const iframe =
-										container.querySelector("iframe");
-									if (iframe) {
-										iframe.src = frontmatter.SourceURL;
-									}
-									return;
-								}
-								const rightLeaf = workspace.getRightLeaf(false);
-								if (rightLeaf) {
-									await rightLeaf.setViewState({
-										type: VIEW_TYPE_IWEAVER_PREVIEW,
-										active: true,
-									});
-									const existingView =
-										workspace.getLeavesOfType(
-											VIEW_TYPE_IWEAVER_PREVIEW
-										)[0];
-									const container =
-										// @ts-ignore
-										existingView.containerEl as HTMLDivElement;
-									const iframe =
-										container.querySelector("iframe");
-									if (iframe) {
-										iframe.src = frontmatter.SourceURL;
-									}
-								}
+								this.setPreviewIframeSource(
+									frontmatter.SourceURL
+								);
 							}
 						}
 					);
@@ -89,8 +111,8 @@ export default class IweaverPlugin extends Plugin {
 
 		// 注册视图
 		this.registerView(
-			VIEW_TYPE_IWEAVER,
-			(leaf) => new IweaverView(leaf, this.settings)
+			IWEAVER_BOT_VIEW,
+			(leaf) => new IweaverBotView(leaf, this.settings)
 		);
 
 		// 添加图标按钮到左侧栏
@@ -104,8 +126,7 @@ export default class IweaverPlugin extends Plugin {
 			const { workspace } = this.app;
 
 			// 如果视图已经打开，激活它
-			const existingView =
-				workspace.getLeavesOfType(VIEW_TYPE_IWEAVER)[0];
+			const existingView = workspace.getLeavesOfType(IWEAVER_BOT_VIEW)[0];
 			if (existingView) {
 				workspace.revealLeaf(existingView);
 				return;
@@ -115,7 +136,7 @@ export default class IweaverPlugin extends Plugin {
 			const rightLeaf = workspace.getRightLeaf(false);
 			if (rightLeaf) {
 				await rightLeaf.setViewState({
-					type: VIEW_TYPE_IWEAVER,
+					type: IWEAVER_BOT_VIEW,
 					active: true,
 				});
 			}
@@ -161,7 +182,7 @@ export default class IweaverPlugin extends Plugin {
 		}
 
 		// 关闭所有视图
-		this.app.workspace.detachLeavesOfType(VIEW_TYPE_IWEAVER);
+		this.app.workspace.detachLeavesOfType(IWEAVER_BOT_VIEW);
 	}
 
 	private getFolderPath(create_time: string, tags: any[]): string {
@@ -172,6 +193,9 @@ export default class IweaverPlugin extends Plugin {
 		} else if (this.settings.folder.includes("{{tag}}")) {
 			const tagName = tags[0]?.name;
 			folderPath = this.settings.folder.replace("{{tag}}", tagName || "");
+		}
+		if (!tags || tags.length === 0) {
+			folderPath = folderPath.replace(/\/$/, "");
 		}
 		return folderPath;
 	}
@@ -250,8 +274,8 @@ export default class IweaverPlugin extends Plugin {
 
 					// 使用新函数获取文件夹路径
 					const folderPath = this.getFolderPath(create_time, tags);
+					console.log(folderPath);
 
-					// 确保文件夹存在
 					if (!this.app.vault.getAbstractFileByPath(folderPath)) {
 						await this.app.vault.createFolder(folderPath);
 					}
@@ -300,7 +324,7 @@ export default class IweaverPlugin extends Plugin {
 					createdCount++;
 				} catch (err) {
 					failedCount++;
-					console.error(`Failed to create file`);
+					console.error(`Failed to create file ${err}`);
 				}
 			}
 
