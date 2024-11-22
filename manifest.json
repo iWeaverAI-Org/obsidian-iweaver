@@ -1,7 +1,7 @@
 {
 	"id": "obsidian-iWeaver",
 	"name": "obsidian-iWeaver",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Synchronize the iWeaver site knowledge base to obsidian",
 	"author": "iweaver@iweaver.ai",
