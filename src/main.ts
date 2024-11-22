@@ -92,7 +92,7 @@ export default class IweaverPlugin extends Plugin {
 		this.registerEvent(
 			this.app.workspace.on("file-open", (file) => {
 				if (file) {
-					this.setBotIframeURL();
+					// this.setBotIframeURL();
 					this.app.fileManager.processFrontMatter(
 						file,
 						async (frontmatter) => {
@@ -150,7 +150,10 @@ export default class IweaverPlugin extends Plugin {
 		}
 
 		if (this.settings.frequency > 0) {
-			const interval = this.settings.frequency * 60 * 1000;
+			const interval = Math.max(
+				this.settings.frequency * 60 * 1000,
+				60 * 1000
+			);
 			this.syncIntervalId = setInterval(() => {
 				this.fetchIweaver();
 			}, interval);
