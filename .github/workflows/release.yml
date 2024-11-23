@@ -24,7 +24,7 @@ jobs:
 
             - name: Build plugin
               run: |
-                  zip -r "iWeaver Sync" main.js manifest.json styles.css
+                  zip -r "iWeaver-Sync" main.js manifest.json styles.css
 
             - name: Create release
               env:
@@ -35,4 +35,4 @@ jobs:
                   gh release create "$tag" \
                     --title="$tag" \
                     --draft \
-                    main.js manifest.json styles.css "iWeaver Sync.zip"
+                    main.js manifest.json styles.css "iWeaver-Sync.zip"
