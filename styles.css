@@ -7,10 +7,22 @@ If your plugin does not need CSS, delete this file.
 
 */
 
-.workspace-leaf-content[data-type="iweaver-view"] {
-    padding: 0;
+.workspace-leaf-content[data-type="iweaver-view"],
+.workspace-leaf-content[data-type="iweaver-preview-view"] {
+	padding: 0;
 }
 
-.workspace-leaf-content[data-type="iweaver-view"] .view-content {
-    padding: 0;
+.workspace-leaf-content[data-type="iweaver-view"] .view-content,
+.workspace-leaf-content[data-type="iweaver-preview-view"] .view-content {
+	padding: 0;
+}
+
+.iweaver_iframe {
+	width: 100%;
+	height: 99%;
+	border: 0 none;
+}
+
+.iweaver_iframe.dark {
+	filter: grayscale(100%) invert(100%);
 }

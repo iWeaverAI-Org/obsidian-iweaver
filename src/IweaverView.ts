@@ -32,12 +32,10 @@ export class IweaverBotView extends ItemView {
 		let src = `${hostName}/dialogue?token=${apiKey}${
 			ifEn ? "&i18n=en" : ""
 		}${isDarkTheme ? "" : "&background_img=0"}`;
+		iframe.classList.add("iweaver_iframe");
 		if (isDarkTheme) {
-			iframe.style.filter = "grayscale(100%) invert(100%)";
+			iframe.classList.add("dark");
 		}
-		iframe.style.width = "100%";
-		iframe.style.height = "99%";
-		iframe.style.border = "none";
 
 		const file = this.app.workspace.getActiveFile();
 		if (!file) {
@@ -69,8 +67,6 @@ export class IweaverPreviewView extends ItemView {
 		container.empty();
 		const iframe = container.createEl("iframe");
 		iframe.src = this.getState().SourceURL as string;
-		iframe.style.width = "100%";
-		iframe.style.height = "99%";
-		iframe.style.border = "none";
+		iframe.classList.add("iweaver_iframe");
 	}
 }

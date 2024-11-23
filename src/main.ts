@@ -183,9 +183,6 @@ export default class IweaverPlugin extends Plugin {
 			clearInterval(this.syncIntervalId);
 			this.syncIntervalId = null;
 		}
-
-		// 关闭所有视图
-		this.app.workspace.detachLeavesOfType(IWEAVER_BOT_VIEW);
 	}
 
 	private getFolderPath(create_time: string, tags: any[]): string {
@@ -227,7 +224,7 @@ export default class IweaverPlugin extends Plugin {
 				apiKey,
 				15,
 				page,
-				this.settings.fetchUrl as any
+				this.settings.fetchUrl
 			);
 
 			if (firstResponse.code !== 0) {
@@ -245,7 +242,7 @@ export default class IweaverPlugin extends Plugin {
 					apiKey,
 					15,
 					page,
-					this.settings.fetchUrl as any
+					this.settings.fetchUrl
 				);
 				const { code, data } = response;
 				if (code !== 0) {
