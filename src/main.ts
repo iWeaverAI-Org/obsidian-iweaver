@@ -1,4 +1,4 @@
-import { Notice, Plugin, moment } from "obsidian";
+import { Notice, Plugin, moment, addIcon } from "obsidian";
 import { DateTime } from "luxon";
 import { IweaverSettings, DEFAULT_SETTINGS } from "./settings";
 import { getArticles } from "./api";
@@ -122,13 +122,21 @@ export default class IweaverPlugin extends Plugin {
 			(leaf) => new IweaverBotView(leaf, this.settings)
 		);
 
+		const iconId = "iWeaverSync";
+		// add icon
+		addIcon(
+			iconId,
+			`<svg t="1732422837661" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1750" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="M1016.5248 442.6752a25.6 25.6 0 0 0-36.1984 0l-58.8288 58.8288a406.528 406.528 0 0 0-119.8592-279.1424A406.9376 406.9376 0 0 0 512 102.4a408.9856 408.9856 0 0 0-362.3424 218.4192 25.6 25.6 0 0 0 45.2608 23.9616A357.888 357.888 0 0 1 512 153.6c193.9968 0 352.512 154.9824 358.2464 347.5968l-58.5216-58.5216a25.6 25.6 0 0 0-36.1984 36.1984l102.4 102.4a25.4976 25.4976 0 0 0 36.2496 0l102.4-102.4a25.6 25.6 0 0 0 0-36.1984zM863.6928 668.5696a25.6 25.6 0 0 0-34.6112 10.6496A357.888 357.888 0 0 1 512 870.4c-193.9968 0-352.512-154.9824-358.2464-347.5968l58.5216 58.5216a25.4976 25.4976 0 0 0 36.2496 0 25.6 25.6 0 0 0 0-36.1984l-102.4-102.4a25.6 25.6 0 0 0-36.1984 0l-102.4 102.4a25.6 25.6 0 0 0 36.1984 36.1984l58.8288-58.8288a406.528 406.528 0 0 0 119.8592 279.1424A406.9376 406.9376 0 0 0 512.0512 921.6a408.9856 408.9856 0 0 0 362.3424-218.4192 25.6 25.6 0 0 0-10.6496-34.6112z" p-id="1751"></path></svg>`
+		);
+
+		this.addRibbonIcon(iconId, "iWeaver Sync", async () => {
+			await this.fetchIweaver();
+		});
+
 		// 添加图标按钮到左侧栏
-		this.addRibbonIcon("bot", "Open Iweaver", async () => {
+		this.addRibbonIcon("bot", "iWeaver Chat", async () => {
 			if (!this.settings.apiKey) {
-				const ifEn = this.settings.platform === "iweaver";
-				new Notice(
-					ifEn ? "Missing IWeaver API Token" : "API Token 未配置"
-				);
+				new Notice("Missing IWeaver API Token");
 				return;
 			}
 
