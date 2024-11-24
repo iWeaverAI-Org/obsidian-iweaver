@@ -59,7 +59,8 @@ export const getArticles = async (
 	apiKey: string,
 	limit = 200,
 	page = 1,
-	url: string = API_URLS.DOMESTIC
+	url: string = API_URLS.DOMESTIC,
+	lastTime: string = ""
 ): Promise<GetArticlesResponse> => {
 	const urlWithSource = `${url}?source=iframe_sdk`;
 	const response = await fetch(urlWithSource, {
@@ -67,6 +68,7 @@ export const getArticles = async (
 		body: JSON.stringify({
 			limit: limit,
 			page: page,
+			lastTime,
 		}),
 		headers: {
 			Token: apiKey,

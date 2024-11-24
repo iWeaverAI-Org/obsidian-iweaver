@@ -4,11 +4,14 @@ import { API_URLS } from "./settings";
 
 export class IweaverSettingTab extends PluginSettingTab {
 	plugin: IweaverPlugin;
+	OpenApiKey: string;
 	constructor(app: App, plugin: IweaverPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
 	display(): void {
+		this.OpenApiKey = this.plugin.settings.apiKey;
+
 		const { containerEl } = this;
 		containerEl.empty();
 
@@ -90,5 +93,27 @@ export class IweaverSettingTab extends PluginSettingTab {
 						await this.plugin.saveSettings();
 					})
 			);
+
+		new Setting(containerEl)
+			.setName("Last Sync")
+			.setDesc(
+				"Last time the plugin synced with iWeaver. The 'Sync' command fetches articles updated after this timestamp"
+			)
+			.addMomentFormat((momentFormat) =>
+				momentFormat
+					.setPlaceholder("Last Sync")
+					.setValue(this.plugin.settings.syncAt)
+					.setDefaultFormat("yyyy-MM-dd HH:mm:ss")
+					.onChange(async (value) => {
+						this.plugin.settings.syncAt = value;
+						await this.plugin.saveSettings();
+					})
+			);
+	}
+
+	hide(): void {
+		if (this.OpenApiKey !== this.plugin.settings.apiKey) {
+			this.plugin.fetchIweaver();
+		}
 	}
 }

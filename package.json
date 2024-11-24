@@ -21,5 +21,9 @@
 		"obsidian": "latest",
 		"tslib": "2.4.0",
 		"typescript": "4.7.4"
+	},
+	"dependencies": {
+		"@types/luxon": "^3.4.2",
+		"luxon": "^3.5.0"
 	}
 }

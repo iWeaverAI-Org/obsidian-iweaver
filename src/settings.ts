@@ -25,9 +25,9 @@ export const DEFAULT_SETTINGS: IweaverSettings = {
 		process.env.MODE === "dev"
 			? "https://kmai-test.xiaoduoai.com/api/v1/files"
 			: "https://kmai.xiaoduoai.com/api/v1/files",
-	syncAt: "04:00",
+	syncAt: "",
 	syncing: false,
 	frequency: 10,
 	syncOnStart: true,
-	folder: "iWeaver/{{tag}}",
+	folder: "iWeaver/{{date}}",
 };

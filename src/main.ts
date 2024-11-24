@@ -1,4 +1,5 @@
 import { Notice, Plugin, moment } from "obsidian";
+import { DateTime } from "luxon";
 import { IweaverSettings, DEFAULT_SETTINGS } from "./settings";
 import { getArticles } from "./api";
 import { IweaverSettingTab } from "./settingsTab";
@@ -97,9 +98,15 @@ export default class IweaverPlugin extends Plugin {
 						file,
 						async (frontmatter) => {
 							if (frontmatter && frontmatter?.SourceURL) {
-								this.setPreviewIframeSource(
-									frontmatter.SourceURL
-								);
+								if (
+									![".docx", ".doc", ".pptx"].some((type) =>
+										frontmatter.SourceURL.endsWith(type)
+									)
+								) {
+									this.setPreviewIframeSource(
+										frontmatter.SourceURL
+									);
+								}
 							}
 						}
 					);
@@ -119,7 +126,9 @@ export default class IweaverPlugin extends Plugin {
 		this.addRibbonIcon("bot", "Open Iweaver", async () => {
 			if (!this.settings.apiKey) {
 				const ifEn = this.settings.platform === "iweaver";
-				new Notice(ifEn ? "Missing API Token" : "API Token 未配置");
+				new Notice(
+					ifEn ? "Missing IWeaver API Token" : "API Token 未配置"
+				);
 				return;
 			}
 
@@ -200,6 +209,14 @@ export default class IweaverPlugin extends Plugin {
 		return folderPath;
 	}
 
+	private parseDateTime = (str: string): string => {
+		let res = DateTime.fromFormat(str, "yyyy-MM-dd HH:mm:ss");
+		if (!res.isValid) {
+			res = DateTime.fromFormat(str, "yyyy-MM-dd HH:mm");
+		}
+		return res.isValid ? res.toFormat("yyyy-MM-dd HH:mm:ss") : "";
+	};
+
 	async fetchIweaver() {
 		const { apiKey, syncing } = this.settings;
 		if (syncing) {
@@ -207,7 +224,7 @@ export default class IweaverPlugin extends Plugin {
 			return;
 		}
 		if (!apiKey) {
-			new Notice("Missing Iweaver api key");
+			new Notice("Missing IWeaver API Token");
 			return;
 		}
 		this.settings.syncing = true;
@@ -218,13 +235,16 @@ export default class IweaverPlugin extends Plugin {
 			let total = 1000;
 			let page = 1;
 			const items = [];
+			const lastSync = this.parseDateTime(this.settings.syncAt);
+			console.log("lastSync-->", lastSync);
 
 			// 获取第一页数据来验证 token
 			const firstResponse = await getArticles(
 				apiKey,
 				15,
 				page,
-				this.settings.fetchUrl
+				this.settings.fetchUrl,
+				lastSync
 			);
 
 			if (firstResponse.code !== 0) {
@@ -242,7 +262,8 @@ export default class IweaverPlugin extends Plugin {
 					apiKey,
 					15,
 					page,
-					this.settings.fetchUrl
+					this.settings.fetchUrl,
+					lastSync
 				);
 				const { code, data } = response;
 				if (code !== 0) {
@@ -288,7 +309,7 @@ export default class IweaverPlugin extends Plugin {
 					const mdFile =
 						this.app.vault.getAbstractFileByPath(mdFileName);
 
-					if (pdfFile && mdFile) {
+					if (pdfFile || mdFile) {
 						skippedCount++;
 						continue;
 					}
@@ -331,6 +352,11 @@ export default class IweaverPlugin extends Plugin {
 			new Notice(
 				`✨ Sync completed!\nCreated: ${createdCount}\nSkipped: ${skippedCount}\nFailed: ${failedCount}`
 			);
+
+			this.settings.syncAt = DateTime.local().toFormat(
+				"yyyy-MM-dd HH:mm:ss"
+			);
+			await this.saveSettings();
 		} catch (error) {
 			new Notice("Failed to fetch articles");
 		} finally {
