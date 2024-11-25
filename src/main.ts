@@ -343,11 +343,17 @@ export default class IweaverPlugin extends Plugin {
 						// 	);
 						// }
 					} else {
+						const isMedia = [
+							"media",
+							"mp3",
+							"mp4",
+							"voice",
+						].contains(type);
 						if (!mdFile) {
 							await this.createMarkdownFile(
 								mdFileName,
 								file_url,
-								innerHTML
+								innerHTML && !isMedia
 									? TurndownService().turndown(innerHTML)
 									: content,
 								content,
