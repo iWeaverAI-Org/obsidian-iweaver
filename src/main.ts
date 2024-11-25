@@ -1,5 +1,7 @@
 import { Notice, Plugin, moment, addIcon } from "obsidian";
 import { DateTime } from "luxon";
+// @ts-ignore
+import { default as TurndownService } from "turndown";
 import { IweaverSettings, DEFAULT_SETTINGS } from "./settings";
 import { getArticles } from "./api";
 import { IweaverSettingTab } from "./settingsTab";
@@ -86,33 +88,33 @@ export default class IweaverPlugin extends Plugin {
 			},
 		});
 		// 注册视图
-		this.registerView(
-			IWEAVER_PREVIEW_VIEW,
-			(leaf) => new IweaverPreviewView(leaf)
-		);
-		this.registerEvent(
-			this.app.workspace.on("file-open", (file) => {
-				if (file) {
-					// this.setBotIframeURL();
-					this.app.fileManager.processFrontMatter(
-						file,
-						async (frontmatter) => {
-							if (frontmatter && frontmatter?.SourceURL) {
-								if (
-									![".docx", ".doc", ".pptx"].some((type) =>
-										frontmatter.SourceURL.endsWith(type)
-									)
-								) {
-									this.setPreviewIframeSource(
-										frontmatter.SourceURL
-									);
-								}
-							}
-						}
-					);
-				}
-			})
-		);
+		// this.registerView(
+		// 	IWEAVER_PREVIEW_VIEW,
+		// 	(leaf) => new IweaverPreviewView(leaf)
+		// );
+		// this.registerEvent(
+		// 	this.app.workspace.on("file-open", (file) => {
+		// 		if (file) {
+		// 			// this.setBotIframeURL();
+		// 			this.app.fileManager.processFrontMatter(
+		// 				file,
+		// 				async (frontmatter) => {
+		// 					if (frontmatter && frontmatter?.SourceURL) {
+		// 						if (
+		// 							![".docx", ".doc", ".pptx"].some((type) =>
+		// 								frontmatter.SourceURL.endsWith(type)
+		// 							)
+		// 						) {
+		// 							this.setPreviewIframeSource(
+		// 								frontmatter.SourceURL
+		// 							);
+		// 						}
+		// 					}
+		// 				}
+		// 			);
+		// 		}
+		// 	})
+		// );
 
 		this.addSettingTab(new IweaverSettingTab(this.app, this));
 
@@ -292,6 +294,7 @@ export default class IweaverPlugin extends Plugin {
 					const {
 						alias,
 						content,
+						innerHTML,
 						tags,
 						type,
 						file_url,
@@ -330,21 +333,23 @@ export default class IweaverPlugin extends Plugin {
 								alias
 							);
 						}
-						if (!mdFile) {
-							await this.createMarkdownFile(
-								mdFileName,
-								file_url,
-								summary,
-								content,
-								id
-							);
-						}
+						// if (!mdFile) {
+						// 	await this.createMarkdownFile(
+						// 		mdFileName,
+						// 		file_url,
+						// 		summary,
+						// 		content,
+						// 		id
+						// 	);
+						// }
 					} else {
 						if (!mdFile) {
 							await this.createMarkdownFile(
 								mdFileName,
 								file_url,
-								summary,
+								innerHTML
+									? TurndownService().turndown(innerHTML)
+									: content,
 								content,
 								id
 							);
@@ -394,7 +399,7 @@ export default class IweaverPlugin extends Plugin {
 	private async createMarkdownFile(
 		fileName: string,
 		fileUrl: string,
-		summary: any,
+		markdown: string,
 		content: string,
 		fileId: string
 	) {
@@ -403,7 +408,7 @@ export default class IweaverPlugin extends Plugin {
 SourceURL: ${downloadLink}
 _id: ${fileId || "unknown"}
 ---
-${summary?.template || content}`;
+${markdown || content}`;
 		await this.app.vault.create(fileName, fileContent);
 	}
 }
