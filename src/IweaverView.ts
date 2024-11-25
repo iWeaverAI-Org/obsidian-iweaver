@@ -23,7 +23,11 @@ export class IweaverBotView extends ItemView {
 		container.empty();
 		const iframe = container.createEl("iframe");
 		const apiKey = this.settings.apiKey || "";
-		const ifEn = this.settings.platform === "iweaver";
+		const ifEn =
+			this.settings.platform === "iweaver" ||
+			!(window.localStorage.getItem("language") || "")
+				.toLocaleLowerCase()
+				.includes("zh");
 		const isDarkTheme = document.body.classList.contains("theme-dark");
 		const hostName =
 			process.env.MODE === "dev"
