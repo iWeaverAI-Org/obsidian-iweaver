@@ -1,6 +1,7 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 import IweaverPlugin from "./main";
 import { API_URLS } from "./settings";
+import { t } from "./i18n";
 
 export class IweaverSettingTab extends PluginSettingTab {
 	plugin: IweaverPlugin;
@@ -10,24 +11,29 @@ export class IweaverSettingTab extends PluginSettingTab {
 		this.plugin = plugin;
 	}
 	display(): void {
-		this.OpenApiKey = this.plugin.settings.apiKey;
-
 		const { containerEl } = this;
 		containerEl.empty();
+		
+		const platformName = this.plugin.settings.platform === "iweaver" ? "IWeaver" : "知我";
 
-		containerEl.createEl("h3", { text: "Sync settings" });
+		containerEl.createEl("h3", { text: t("setting.title.sync") });
 
 		new Setting(containerEl)
-			.setName("Source platform")
-			.setDesc(
-				"Choose the source platform of the data, which is where you get the Token."
-			)
+			.setName(t("setting.title.platform"))
+			.setDesc(t("setting.desc.platform"))
 			.addDropdown((dropdown) =>
 				dropdown
-					.addOption("zhiwo", "Zhiwo")
-					.addOption("iweaver", "IWeaver")
+					.addOption("zhiwo", t("setting.option.zhiwo"))
+					.addOption("iweaver", t("setting.option.iweaver"))
 					.setValue(this.plugin.settings.platform)
 					.onChange(async (value) => {
+						const prefix = this.plugin.settings.platform === "iweaver" ? "iWeaver" : "zhiwo";
+						const preFolder = this.plugin.settings.folder;
+						if(preFolder===`${prefix}/{{tag}}`){
+							this.plugin.settings.folder = value === "iweaver" ? "iWeaver/{{date}}" : "zhiwo/{{tag}}";
+						}else if(preFolder===`${prefix}/{{date}}`){
+							this.plugin.settings.folder = value === "iweaver" ? "iWeaver/{{tag}}" : "zhiwo/{{date}}";
+						}
 						this.plugin.settings.platform =
 							value === "iweaver" ? "iweaver" : "zhiwo";
 						this.plugin.settings.fetchUrl =
@@ -35,17 +41,16 @@ export class IweaverSettingTab extends PluginSettingTab {
 								? API_URLS.OVERSEAS
 								: API_URLS.DOMESTIC;
 						await this.plugin.saveSettings();
+						this.display();
 					})
 			);
 
 		new Setting(containerEl)
-			.setName("API Token")
-			.setDesc(
-				"Create an API key at settings page on iWeaver web app. It's a secret!"
-			)
+			.setName(t("setting.title.token"))
+			.setDesc(t("setting.desc.token", { platform: platformName }))
 			.addText((text) =>
 				text
-					.setPlaceholder("Enter your API token")
+					.setPlaceholder(t("setting.placeholder.token"))
 					.setValue(this.plugin.settings.apiKey)
 					.onChange(async (value) => {
 						this.plugin.settings.apiKey = value;
@@ -54,22 +59,23 @@ export class IweaverSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Folder")
-			.setDesc("Choose the form of folder where the data will be stored")
-			.addDropdown((dropdown) =>
-				dropdown
-					.addOption("iWeaver/{{tag}}", "iWeaver/{{tag}}")
-					.addOption("iWeaver/{{date}}", "iWeaver/{{date}}")
+			.setName(t("setting.title.folder"))
+			.setDesc(t("setting.desc.folder", { platform: platformName }))
+			.addDropdown((dropdown) => {
+				const prefix = this.plugin.settings.platform === "iweaver" ? "iWeaver" : "zhiwo";
+				return dropdown
+					.addOption(`${prefix}/{{tag}}`, `${prefix}/{{tag}}`)
+					.addOption(`${prefix}/{{date}}`, `${prefix}/{{date}}`)
 					.setValue(this.plugin.settings.folder)
 					.onChange(async (value) => {
 						this.plugin.settings.folder = value;
 						await this.plugin.saveSettings();
-					})
-			);
+					});
+			});
 
 		new Setting(containerEl)
-			.setName("Frequency")
-			.setDesc("Enter the frequency in minutes to sync automatically.")
+			.setName(t("setting.title.frequency"))
+			.setDesc(t("setting.desc.frequency"))
 			.addText((text) =>
 				text
 					.setPlaceholder("10")
@@ -81,10 +87,8 @@ export class IweaverSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Sync on startup")
-			.setDesc(
-				"Check this box if you want to sync with Iweaver when the app is loaded"
-			)
+			.setName(t("setting.title.syncOnStartup"))
+			.setDesc(t("setting.desc.syncOnStartup", { platform: platformName }))
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.syncOnStart)
@@ -95,10 +99,8 @@ export class IweaverSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName("Last Sync")
-			.setDesc(
-				"Last time the plugin synced with iWeaver. The 'Sync' command fetches articles updated after this timestamp"
-			)
+			.setName(t("setting.title.lastSync"))
+			.setDesc(t("setting.desc.lastSync", { platform: platformName }))
 			.addMomentFormat((momentFormat) =>
 				momentFormat
 					.setPlaceholder("Last Sync")

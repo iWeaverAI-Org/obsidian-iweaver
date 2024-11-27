@@ -8,9 +8,9 @@ import { IweaverSettingTab } from "./settingsTab";
 import {
 	IWEAVER_BOT_VIEW,
 	IweaverBotView,
-	IweaverPreviewView,
 	IWEAVER_PREVIEW_VIEW,
 } from "./IweaverView";
+import { t } from "./i18n";
 export default class IweaverPlugin extends Plugin {
 	settings: IweaverSettings;
 	private syncIntervalId: NodeJS.Timeout | null = null;
@@ -138,7 +138,7 @@ export default class IweaverPlugin extends Plugin {
 		// 添加图标按钮到左侧栏
 		this.addRibbonIcon("bot", "iWeaver Chat", async () => {
 			if (!this.settings.apiKey) {
-				new Notice("Missing IWeaver API Token");
+				new Notice(t("notice.missing_token"));
 				return;
 			}
 
@@ -230,18 +230,18 @@ export default class IweaverPlugin extends Plugin {
 	async fetchIweaver() {
 		const { apiKey, syncing } = this.settings;
 		if (syncing) {
-			new Notice("Already syncing ...");
+			new Notice(t("notice.syncing"));
 			return;
 		}
 		if (!apiKey) {
-			new Notice("Missing IWeaver API Token");
+			new Notice(t("notice.missing_token"));
 			return;
 		}
 		this.settings.syncing = true;
 		await this.saveSettings();
 
 		try {
-			new Notice("🚀 Fetching items ...");
+			new Notice(t("notice.fetching"));
 			let total = 1000;
 			let page = 1;
 			const items = [];
@@ -258,7 +258,7 @@ export default class IweaverPlugin extends Plugin {
 			);
 
 			if (firstResponse.code !== 0) {
-				new Notice(`Token Error`);
+				new Notice(t("notice.token_error"));
 				return;
 			}
 
@@ -277,7 +277,7 @@ export default class IweaverPlugin extends Plugin {
 				);
 				const { code, data } = response;
 				if (code !== 0) {
-					new Notice(`Fetch Error`);
+					new Notice(t("notice.fetch_error"));
 					continue;
 				}
 				page += 1;
@@ -287,7 +287,7 @@ export default class IweaverPlugin extends Plugin {
 			let skippedCount = 0;
 			let createdCount = 0;
 			let failedCount = 0;
-			new Notice(`Found ${items.length} items`);
+			new Notice(t("notice.found_items", { count: items.length }));
 
 			for (const item of items) {
 				try {
@@ -299,7 +299,6 @@ export default class IweaverPlugin extends Plugin {
 						type,
 						file_url,
 						create_time,
-						summary,
 						id,
 					} = item;
 					const sanitizedTitle = alias.replace(/[\\/:*?"<>|]/g, "");
@@ -369,7 +368,11 @@ export default class IweaverPlugin extends Plugin {
 			}
 
 			new Notice(
-				`✨ Sync completed!\nCreated: ${createdCount}\nSkipped: ${skippedCount}\nFailed: ${failedCount}`
+				t("notice.sync_completed", {
+					created: createdCount,
+					skipped: skippedCount,
+					failed: failedCount
+				})
 			);
 
 			this.settings.syncAt = DateTime.local().toFormat(
@@ -377,7 +380,7 @@ export default class IweaverPlugin extends Plugin {
 			);
 			await this.saveSettings();
 		} catch (error) {
-			new Notice("Failed to fetch articles");
+			new Notice(t("notice.failed_fetch"));
 		} finally {
 			await this.resetSyncingStateSetting();
 		}

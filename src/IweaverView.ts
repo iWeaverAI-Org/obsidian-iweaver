@@ -1,5 +1,6 @@
 import { ItemView, WorkspaceLeaf } from "obsidian";
 import { IweaverSettings } from "./settings";
+import { t } from "./i18n";
 
 export const IWEAVER_BOT_VIEW = "iweaver-view";
 export const IWEAVER_PREVIEW_VIEW = "iweaver-preview-view";
@@ -15,7 +16,7 @@ export class IweaverBotView extends ItemView {
 	}
 
 	getDisplayText() {
-		return "Iweaver View";
+		return t("view.iweaver");
 	}
 
 	async onOpen() {
@@ -64,7 +65,7 @@ export class IweaverPreviewView extends ItemView {
 		return IWEAVER_PREVIEW_VIEW;
 	}
 	getDisplayText() {
-		return "Iweaver Preview";
+		return t("view.preview");
 	}
 	async onOpen() {
 		const container = this.containerEl.children[1];
