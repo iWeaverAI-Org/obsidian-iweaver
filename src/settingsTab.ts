@@ -13,8 +13,9 @@ export class IweaverSettingTab extends PluginSettingTab {
 	display(): void {
 		const { containerEl } = this;
 		containerEl.empty();
-		
-		const platformName = this.plugin.settings.platform === "iweaver" ? "IWeaver" : "知我";
+
+		const platformName =
+			this.plugin.settings.platform === "iweaver" ? "IWeaver" : "知我";
 
 		new Setting(containerEl)
 			.setName(t("setting.title.platform"))
@@ -25,12 +26,21 @@ export class IweaverSettingTab extends PluginSettingTab {
 					.addOption("iweaver", t("setting.option.iweaver"))
 					.setValue(this.plugin.settings.platform)
 					.onChange(async (value) => {
-						const prefix = this.plugin.settings.platform === "iweaver" ? "iWeaver" : "zhiwo";
+						const prefix =
+							this.plugin.settings.platform === "iweaver"
+								? "iWeaver"
+								: "zhiwo";
 						const preFolder = this.plugin.settings.folder;
-						if(preFolder===`${prefix}/{{tag}}`){
-							this.plugin.settings.folder = value === "iweaver" ? "iWeaver/{{date}}" : "zhiwo/{{tag}}";
-						}else if(preFolder===`${prefix}/{{date}}`){
-							this.plugin.settings.folder = value === "iweaver" ? "iWeaver/{{tag}}" : "zhiwo/{{date}}";
+						if (preFolder === `${prefix}/{{tag}}`) {
+							this.plugin.settings.folder =
+								value === "iweaver"
+									? "iWeaver/{{date}}"
+									: "zhiwo/{{tag}}";
+						} else if (preFolder === `${prefix}/{{date}}`) {
+							this.plugin.settings.folder =
+								value === "iweaver"
+									? "iWeaver/{{tag}}"
+									: "zhiwo/{{date}}";
 						}
 						this.plugin.settings.platform =
 							value === "iweaver" ? "iweaver" : "zhiwo";
@@ -60,7 +70,10 @@ export class IweaverSettingTab extends PluginSettingTab {
 			.setName(t("setting.title.folder"))
 			.setDesc(t("setting.desc.folder", { platform: platformName }))
 			.addDropdown((dropdown) => {
-				const prefix = this.plugin.settings.platform === "iweaver" ? "iWeaver" : "zhiwo";
+				const prefix =
+					this.plugin.settings.platform === "iweaver"
+						? "iWeaver"
+						: "zhiwo";
 				return dropdown
 					.addOption(`${prefix}/{{tag}}`, `${prefix}/{{tag}}`)
 					.addOption(`${prefix}/{{date}}`, `${prefix}/{{date}}`)
@@ -86,7 +99,9 @@ export class IweaverSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName(t("setting.title.syncOnStartup"))
-			.setDesc(t("setting.desc.syncOnStartup", { platform: platformName }))
+			.setDesc(
+				t("setting.desc.syncOnStartup", { platform: platformName })
+			)
 			.addToggle((toggle) =>
 				toggle
 					.setValue(this.plugin.settings.syncOnStart)

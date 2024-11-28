@@ -1,4 +1,4 @@
-import { Notice, Plugin, moment, addIcon,htmlToMarkdown } from "obsidian";
+import { Notice, Plugin, moment, addIcon, htmlToMarkdown } from "obsidian";
 import { DateTime } from "luxon";
 import { IweaverSettings, DEFAULT_SETTINGS } from "./settings";
 import { getArticles } from "./api";
@@ -362,7 +362,7 @@ export default class IweaverPlugin extends Plugin {
 				t("notice.sync_completed", {
 					created: createdCount,
 					skipped: skippedCount,
-					failed: failedCount
+					failed: failedCount,
 				})
 			);
 
