@@ -1,26 +1,25 @@
 {
   "notice": {
       "syncing": "Already syncing ...",
-      "missing_token": "Missing IWeaver API Token",
+      "missing_token": "Missing iWeaver API token",
       "fetching": "🚀 Fetching items ...",
-      "token_error": "Token Error",
-      "fetch_error": "Fetch Error",
+      "token_error": "Token error",
+      "fetch_error": "Fetch error",
       "found_items": "Found {{count}} items",
       "sync_completed": "✨ Sync completed!\nCreated: {{created}}\nSkipped: {{skipped}}\nFailed: {{failed}}",
       "failed_fetch": "Failed to fetch articles"
   },
   "setting": {
       "title":{
-          "sync":"Sync settings",
           "platform":"Source platform",
-          "token":"API Token",
+          "token":"API token",
           "folder":"Folder",
           "frequency":"Frequency",
           "syncOnStartup":"Sync on startup",
-          "lastSync":"Last Sync"
+          "lastSync":"Last sync"
       },
       "desc": {
-          "platform":"Choose the source platform of the data, which is where you get the Token",
+          "platform":"Choose the source platform of the data, which is where you get the token",
           "token":"Create an API key at settings page on {{platform}} web app. It's a secret!",
           "folder":"Choose the form of folder where the {{platform}} data will be stored",
           "frequency":"Enter the frequency in minutes to sync automatically",
@@ -36,7 +35,7 @@
       }
   },
   "view": {
-      "iweaver": "Iweaver View",
-      "preview": "Iweaver Preview"
+      "iweaver": "Iweaver view",
+      "preview": "Iweaver preview"
   }
 }

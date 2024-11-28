@@ -3,7 +3,7 @@
 	"name": "iWeaver Sync",
 	"version": "0.0.4",
 	"minAppVersion": "0.15.0",
-	"description": "Sync the iWeaver site knowledge base to this note-taking software",
+	"description": "Sync the iWeaver site knowledge base to your vault.",
 	"author": "iweaver@iweaver.ai",
 	"authorUrl": "https://github.com/iWeaverAI-Org",
 	"isDesktopOnly": false

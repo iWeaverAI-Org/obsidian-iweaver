@@ -16,8 +16,6 @@ export class IweaverSettingTab extends PluginSettingTab {
 		
 		const platformName = this.plugin.settings.platform === "iweaver" ? "IWeaver" : "知我";
 
-		containerEl.createEl("h3", { text: t("setting.title.sync") });
-
 		new Setting(containerEl)
 			.setName(t("setting.title.platform"))
 			.setDesc(t("setting.desc.platform"))

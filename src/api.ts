@@ -1,3 +1,4 @@
+import { requestUrl } from "obsidian";
 import { API_URLS } from "./settings";
 
 interface GetArticlesResponse {
@@ -60,10 +61,10 @@ export const getArticles = async (
 	limit = 200,
 	page = 1,
 	url: string = API_URLS.DOMESTIC,
-	lastTime: string = ""
+	lastTime = ""
 ): Promise<GetArticlesResponse> => {
 	const urlWithSource = `${url}?source=iframe_sdk`;
-	const response = await fetch(urlWithSource, {
+	const response = await requestUrl({
 		method: "POST",
 		body: JSON.stringify({
 			limit: limit,
@@ -73,6 +74,7 @@ export const getArticles = async (
 		headers: {
 			Token: apiKey,
 		},
+		url: urlWithSource,
 	});
 	return response.json();
 };

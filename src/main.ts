@@ -1,7 +1,5 @@
-import { Notice, Plugin, moment, addIcon } from "obsidian";
+import { Notice, Plugin, moment, addIcon,htmlToMarkdown } from "obsidian";
 import { DateTime } from "luxon";
-// @ts-ignore
-import { default as TurndownService } from "turndown";
 import { IweaverSettings, DEFAULT_SETTINGS } from "./settings";
 import { getArticles } from "./api";
 import { IweaverSettingTab } from "./settingsTab";
@@ -31,8 +29,6 @@ export default class IweaverPlugin extends Plugin {
 					if (frontmatter?._id) {
 						const file_id = frontmatter._id;
 						const fileIdParam = `file_id=${file_id}`;
-						console.log(iframe.src);
-
 						if (iframe.src.includes("file_id=")) {
 							// 替换现有的 file_id
 							iframe.src = iframe.src.replace(
@@ -61,7 +57,6 @@ export default class IweaverPlugin extends Plugin {
 			existingView =
 				this.app.workspace.getLeavesOfType(IWEAVER_PREVIEW_VIEW)[0];
 		}
-		console.log(this.app.workspace.getLeavesOfType(IWEAVER_PREVIEW_VIEW));
 		// @ts-ignore
 		const container = existingView.containerEl as HTMLDivElement;
 		const iframe = container.querySelector("iframe");
@@ -246,8 +241,6 @@ export default class IweaverPlugin extends Plugin {
 			let page = 1;
 			const items = [];
 			const lastSync = this.parseDateTime(this.settings.syncAt);
-			console.log("lastSync-->", lastSync);
-
 			// 获取第一页数据来验证 token
 			const firstResponse = await getArticles(
 				apiKey,
@@ -305,8 +298,6 @@ export default class IweaverPlugin extends Plugin {
 
 					// 使用新函数获取文件夹路径
 					const folderPath = this.getFolderPath(create_time, tags);
-					console.log(folderPath);
-
 					if (!this.app.vault.getAbstractFileByPath(folderPath)) {
 						await this.app.vault.createFolder(folderPath);
 					}
@@ -353,7 +344,7 @@ export default class IweaverPlugin extends Plugin {
 								mdFileName,
 								file_url,
 								innerHTML && !isMedia
-									? TurndownService().turndown(innerHTML)
+									? htmlToMarkdown(innerHTML)
 									: content,
 								content,
 								id
