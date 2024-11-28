@@ -76,5 +76,5 @@ export const getArticles = async (
 		},
 		url: urlWithSource,
 	});
-	return response.json();
+	return response.json;
 };

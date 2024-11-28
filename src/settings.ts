@@ -18,16 +18,16 @@ export const API_URLS = {
 			? "https://test.iweaver.ai/api/v1/files"
 			: "https://chat.iweaver.ai/api/v1/files",
 } as const;
+const ifEn = !(window.localStorage.getItem("language") || "")
+	.toLocaleLowerCase()
+	.includes("zh");
 export const DEFAULT_SETTINGS: IweaverSettings = {
 	apiKey: "",
-	platform: "zhiwo",
-	fetchUrl:
-		process.env.MODE === "dev"
-			? "https://kmai-test.xiaoduoai.com/api/v1/files"
-			: "https://kmai.xiaoduoai.com/api/v1/files",
+	platform: ifEn ? "iweaver" : "zhiwo",
+	fetchUrl: ifEn ? API_URLS.OVERSEAS : API_URLS.DOMESTIC,
 	syncAt: "",
 	syncing: false,
 	frequency: 10,
 	syncOnStart: true,
-	folder: "iWeaver/{{date}}",
+	folder: ifEn ? "iWeaver/{{date}}" : "zhiwo/{{date}}",
 };

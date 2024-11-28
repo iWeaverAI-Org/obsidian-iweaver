@@ -1,41 +1,41 @@
 {
-  "notice": {
-      "syncing": "Already syncing ...",
-      "missing_token": "Missing iWeaver API token",
-      "fetching": "🚀 Fetching items ...",
-      "token_error": "Token error",
-      "fetch_error": "Fetch error",
-      "found_items": "Found {{count}} items",
-      "sync_completed": "✨ Sync completed!\nCreated: {{created}}\nSkipped: {{skipped}}\nFailed: {{failed}}",
-      "failed_fetch": "Failed to fetch articles"
-  },
-  "setting": {
-      "title":{
-          "platform":"Source platform",
-          "token":"API token",
-          "folder":"Folder",
-          "frequency":"Frequency",
-          "syncOnStartup":"Sync on startup",
-          "lastSync":"Last sync"
-      },
-      "desc": {
-          "platform":"Choose the source platform of the data, which is where you get the token",
-          "token":"Create an API key at settings page on {{platform}} web app. It's a secret!",
-          "folder":"Choose the form of folder where the {{platform}} data will be stored",
-          "frequency":"Enter the frequency in minutes to sync automatically",
-          "syncOnStartup":"Check this box if you want to sync with {{platform}} when the app is loaded",
-          "lastSync":"Last time the plugin synced with {{platform}}. The 'Sync' command fetches articles updated after this timestamp"
-      },
-      "option": {
-          "zhiwo":"zhiwo",
-          "iweaver":"IWeaver"
-      },
-      "placeholder": {
-          "token":"Enter your API token"
-      }
-  },
-  "view": {
-      "iweaver": "Iweaver view",
-      "preview": "Iweaver preview"
-  }
+	"notice": {
+		"syncing": "Already syncing ...",
+		"missing_token": "Missing iWeaver API token",
+		"fetching": "🚀 Fetching items ...",
+		"token_error": "Token error",
+		"fetch_error": "Fetch error",
+		"found_items": "Found {{count}} items",
+		"sync_completed": "✨ Sync completed!\nCreated: {{created}}\nSkipped: {{skipped}}\nFailed: {{failed}}",
+		"failed_fetch": "Failed to fetch articles"
+	},
+	"setting": {
+		"title": {
+			"platform": "Source platform",
+			"token": "API token",
+			"folder": "Folder",
+			"frequency": "Frequency",
+			"syncOnStartup": "Sync on startup",
+			"lastSync": "Last sync"
+		},
+		"desc": {
+			"platform": "Choose the source platform of the data, which is where you get the token",
+			"token": "Create an API key at settings page on {{platform}} web app. It's a secret!",
+			"folder": "Choose the form of folder where the {{platform}} data will be stored",
+			"frequency": "Enter the frequency in minutes to sync automatically",
+			"syncOnStartup": "Check this box if you want to sync with {{platform}} when the app is loaded",
+			"lastSync": "Last time the plugin synced with {{platform}}. The 'Sync' command fetches articles updated after this timestamp"
+		},
+		"option": {
+			"zhiwo": "zhiwo",
+			"iweaver": "iWeaver"
+		},
+		"placeholder": {
+			"token": "Enter your API token"
+		}
+	},
+	"view": {
+		"iweaver": "Iweaver view",
+		"preview": "Iweaver preview"
+	}
 }

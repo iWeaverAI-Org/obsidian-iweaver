@@ -371,6 +371,7 @@ export default class IweaverPlugin extends Plugin {
 			);
 			await this.saveSettings();
 		} catch (error) {
+			// console.log(error);
 			new Notice(t("notice.failed_fetch"));
 		} finally {
 			await this.resetSyncingStateSetting();
